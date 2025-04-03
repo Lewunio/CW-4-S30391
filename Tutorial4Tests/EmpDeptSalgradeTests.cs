@@ -131,9 +131,15 @@ public class EmpDeptSalgradeTests
         var emps = Database.GetEmps();
         var grades = Database.GetSalgrades();
 
-        // var result = null;
-        //
-        // Assert.Contains(result, r => r.EName == "ALLEN" && r.Grade == 3);
+        var result = emps.SelectMany(e => grades
+            .Where(s => e.Sal >= s.Losal && e.Sal <= s.Hisal)
+            .Select(s => new
+            {
+                e.EName, 
+                s.Grade
+            }));
+        
+        Assert.Contains(result, r => r.EName == "ALLEN" && r.Grade == 3);
     }
 
     // 9. Aggregation (AVG)
@@ -161,10 +167,28 @@ public class EmpDeptSalgradeTests
     public void ShouldReturnEmployeesEarningMoreThanDeptAverage()
     {
         var emps = Database.GetEmps();
+        
+        var deptAverages = emps.GroupBy(e => e.DeptNo)
+            .Select(g => new
+            {
+                DeptNo = g.Key, 
+                AvgSal = g.Average(e => e.Sal)
+            });
 
-        // var result = null; 
-        //
-        // Assert.Contains("ALLEN", result);
+        var result = emps.Join(deptAverages,
+                e => e.DeptNo,
+                da => da.DeptNo,
+                (e, da) => new
+                {
+                    e.EName, 
+                    e.Sal, 
+                    da.AvgSal
+                })
+            .Where(e => e.Sal > e.AvgSal)
+            .Select(e => e.EName)
+            .ToList();; 
+        
+        Assert.Contains("ALLEN", result);
     }
 }
 
