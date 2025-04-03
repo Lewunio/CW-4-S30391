@@ -75,9 +75,16 @@ public class EmpDeptSalgradeTests
         var emps = Database.GetEmps();
         var depts = Database.GetDepts();
 
-        //var result = null; 
+        var result = emps.Join(depts,
+            e => e.DeptNo,
+            d => d.DeptNo,
+            (e, d) => new
+            {
+                e.EName, 
+                d.DName 
+            });
 
-        //Assert.Contains(result, r => r.DName == "SALES" && r.EName == "ALLEN");
+        Assert.Contains(result, r => r.DName == "SALES" && r.EName == "ALLEN");
     }
 
     // 6. Group by DeptNo
@@ -87,9 +94,15 @@ public class EmpDeptSalgradeTests
     {
         var emps = Database.GetEmps();
 
-        // var result = null; 
-        //
-        // Assert.Contains(result, g => g.DeptNo == 30 && g.Count == 2);
+        var result = emps
+            .GroupBy(e=>e.DeptNo)
+            .Select(e => new 
+            { 
+                DeptNo = e.Key, 
+                Count = e.Count() 
+            }); 
+        
+        Assert.Contains(result, g => g.DeptNo == 30 && g.Count == 2);
     }
 
     // 7. SelectMany (simulate flattening)
@@ -99,9 +112,15 @@ public class EmpDeptSalgradeTests
     {
         var emps = Database.GetEmps();
 
-        // var result = null; 
-        //
-        // Assert.All(result, r => Assert.NotNull(r.Comm));
+        var result = emps
+            .Where(e => e.Comm != null)
+            .Select(e => new 
+                { 
+                    e.EName, 
+                    e.Comm 
+                });
+        
+        Assert.All(result, r => Assert.NotNull(r.Comm));
     }
 
     // 8. Join with Salgrade
