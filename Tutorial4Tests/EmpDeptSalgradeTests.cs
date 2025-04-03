@@ -54,13 +54,17 @@ public class EmpDeptSalgradeTests
     {
         var emps = Database.GetEmps();
 
-        //var result = null; 
+        var result = emps.Select(obj=>new
+        {
+            EName = obj.EName,
+            Sal = obj.Sal,
+        }).ToList(); 
         
-        // Assert.All(result, r =>
-        // {
-        //     Assert.False(string.IsNullOrWhiteSpace(r.EName));
-        //     Assert.True(r.Sal > 0);
-        // });
+         Assert.All(result, r =>
+         {
+             Assert.False(string.IsNullOrWhiteSpace(r.EName));
+             Assert.True(r.Sal > 0);
+         });
     }
 
     // 5. JOIN Emp to Dept
@@ -125,7 +129,7 @@ public class EmpDeptSalgradeTests
             .Select(obj=>new
             {
                 DeptNo = obj.Key,
-                AvgSal = obj.Average(e=>e.DeptNo)
+                AvgSal = obj.Average(e=>e.Sal)
             })
             .ToList(); 
         
