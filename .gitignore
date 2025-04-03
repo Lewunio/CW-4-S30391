@@ -398,3 +398,8 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+.idea/
+Tutorial4
+Tutorial4.sln
+Tutorial4Tests/bin
+Tutorial4Tests/obj
