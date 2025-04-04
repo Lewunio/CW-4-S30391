@@ -59,9 +59,9 @@ public class AdvancedEmpDeptTests
     {
         var emps = Database.GetEmps();
 
-        // var withMgr = null; 
-        //
-        // Assert.All(withMgr, e => Assert.NotNull(e.Mgr));
+        var withMgr = emps.Where(e=>e.Mgr!=null).ToList(); 
+        
+        Assert.All(withMgr, e => Assert.NotNull(e.Mgr));
     }
 
     // 16. All employees earn more than 500
@@ -95,9 +95,17 @@ public class AdvancedEmpDeptTests
     {
         var emps = Database.GetEmps();
 
-        // var result = null;
-        //
-        // Assert.Contains(result, r => r.Employee == "SMITH" && r.Manager == "FORD");
+        var result = emps.Join(emps,
+            e => e.Mgr,
+            m => m.EmpNo,
+            (e, m)=> new
+            {
+                Employee = e.EName,
+                Manager = m.EName,
+            }
+            );
+        
+        Assert.Contains(result, r => r.Employee == "SMITH" && r.Manager == "FORD");
     }
 
     // 19. Let clause usage (sal + comm)
@@ -125,8 +133,25 @@ public class AdvancedEmpDeptTests
         var depts = Database.GetDepts();
         var grades = Database.GetSalgrades();
 
-        // var result = null; 
-        //
-        // Assert.Contains(result, r => r.EName == "ALLEN" && r.DName == "SALES" && r.Grade == 3);
+        var result = emps
+            .Join(depts,
+            e => e.DeptNo,
+            d => d.DeptNo,
+            (e, d) => new
+            {
+                Emp = e, 
+                Dept = d
+            })
+            .SelectMany(
+                ed => grades.Where(s => ed.Emp.Sal >= s.Losal && ed.Emp.Sal <= s.Hisal),
+                (ed, s) => new
+                {
+                    EName = ed.Emp.EName,
+                    DName = ed.Dept.DName,
+                    Grade = s.Grade
+                })
+            .ToList(); 
+        
+        Assert.Contains(result, r => r.EName == "ALLEN" && r.DName == "SALES" && r.Grade == 3);
     }
 }
