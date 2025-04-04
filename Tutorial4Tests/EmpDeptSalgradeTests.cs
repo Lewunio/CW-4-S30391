@@ -1,5 +1,4 @@
-﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
-using Tutorial3.Models;
+﻿using Tutorial3.Models;
 
 public class EmpDeptSalgradeTests
 {
